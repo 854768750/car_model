@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/lion/car_model/ckpt_v6/model.ckpt-369799"
+all_model_checkpoint_paths: "/home/lion/car_model/ckpt_v6/model.ckpt-369799"
