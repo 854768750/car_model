@@ -1,3 +1,106 @@
+# Real Racecar Setup
+
+## How to use google cartographer for slam
+
+### 1) Install google cartographer and ROS integration
+follow instruction [here](https://google-cartographer-ros.readthedocs.io/en/latest/) or commandlines below.
+
+    # Install wstool and rosdep. 
+    sudo apt-get update 
+    sudo apt-get install -y python-wstool python-rosdep ninja-build 
+    
+    # Create a new workspace in 'slam_ws'. 
+    mkdir slam_ws 
+    cd slam_ws 
+    wstool init src 
+    
+    # Merge the cartographer_ros.rosinstall file and fetch code for dependencies. 
+    wstool merge -t src https://raw.githubusercontent.com/googlecartographer/cartographer_ros/master/cartographer_ros.rosinstall 
+    wstool update -t src 
+    
+    # Install proto3. src/cartographer/scripts/install_proto3.sh 
+    # Install deb dependencies.  
+    # The command 'sudo rosdep init' will print an error if you have already  
+    # executed it since installing ROS. This error can be ignored. 
+    sudo rosdep init 
+    rosdep update 
+    rosdep install --from-paths src --ignore-src --rosdistro=${ROS_DISTRO} -y 
+    
+    # Build and install. 
+    catkin_make_isolated --install --use-ninja 
+    source install_isolated/setup.bash
+
+### 2) Build a map and save it for localization later
+Add a **[mapping.launch](mapping.launch)** and a **[localization.launch](localization.launch)** to cartographer_ros launch directory ***~/slam_ws/src/cartographer_ros/cartographer_ros/launch*** and add a **[mapping.lua](mapping.lua)** to configuration_files directory ***~/slam_ws/src/cartographer_ros/cartographer_ros/configuration_files***.
+
+ 
+
+ 
+
+ As the **cartographer_node** subscribes **/scan** topic, we should start lidar first.
+
+    ## start eth0 for lidar
+    sudo ifconfig eth0 192.168.1.10 netmask 255.255.255.0 up
+    
+    ## make sure the lidar is spinning after the power wire is connected
+    ## connect the ethernet wire to the TX1 board
+    ## launch urg_node and the lidar starts to stream data
+    roslaunch race lidar.launch
+ Start cartographer_node by following commandline
+ 
+
+      ## start the mapping node
+      roslaunch cartographer_ros mapping.launch
+      
+      ## start rviz for visualization
+      rosrun rviz rviz -d `rospack find cartographer_ros`/configuration_files/demo_2d.rviz
+Use joystick to manually control the car moving around to explore and build a map. A better map will be built if the car moves slowly and turns smoothly.
+
+      ## start to joystick control 
+    roslaunch race joystick.launch
+After you finish building the map, save the map into a **.pbstram** file for further use. 
+
+      ## call the /write_state service to save it
+      ## use your own map_file_path and map_file_name in the commandline
+      rosservice call /write_state ~/map_file_path/map_file_name.bag.pbstream
+### 3) Use the saved map for localization
+Use the following commandline to localize the car
+
+      ## load the map by specifying the load_state_filename 
+      roslaunch cartographer_ros demo_backpack_2d_localization.launch    load_state_filename:=${HOME}/map_file_name.bag.pbstream
+      ## start rviz for visualization
+      rosrun rviz rviz -d `rospack find cartographer_ros`/configuration_files/demo_2d.rviz
+ A **/tf** from *map_frame*(typically map) to *published_frame*(typically base_link) is broadcasted and you can listen to the transform to get the car's location in map_frame.
+
+## How to use PID control to track waypoint
+
+ - Press the **RB** button and use two joysticks to manually control the car.
+ - Press button **B** and the car will automatically track the waypoints.
+ - After the car finishes tracking waypoints, press button **A** to reset waypoints.
+ - 
+
+ 
+ 
+
+      ## start the path_tracking.py
+      roslaunch race path_tracking.launch
+
+
+   
+
+## How to connect MATLAB to master node on the car
+Firstly, you should install **Robotics System Toolbox** in you MATLAB.
+The following commandlines should be typed in MATLAB terminal.
+
+      ## ROS_MASTER_URI is the master node running on the TX1 board
+      setenv('ROS_MASTER_URI','http://192.168.0.2:11311')
+      ## ROS_IP is the IP address where the matlab_global_node runs
+      ## you can get it using ipconfig in a Windows terminal
+      setenv('ROS_IP','192.168.0.1')
+      ## start matlab_global_node by specifying the MASTER node you want to connect to
+      rosinit('http://192.168.0.2:11311')
+
+
 # Simulated Racecar Modeling
 
 ## Steps
