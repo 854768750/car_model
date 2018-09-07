@@ -145,26 +145,26 @@ if train is 3, the model is loaded and trained.
 
     #load variables and continue to train the NN
     elif train==3:
-	    global_step = tf.Variable(0)
-	    learning_rate = tf.train.exponential_decay(0.05, global_step, 100, 0.999, staircase = False)
-	    loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),reduction_indices=[1]))
-	    train_step = tf.train.AdamOptimizer(learning_rate = learning_rate).minimize(loss, global_step = global_step)
-	    saver=tf.train.Saver()
-	    sess = tf.InteractiveSession()
-	    model_file=tf.train.latest_checkpoint(project_dir+'/ckpt_v5')
-	    saver.restore(sess,model_file)
-	    saver=tf.train.Saver(max_to_keep=1)
-	    for i in range(iterations):
-		    x_feed = x_data
-		    y_feed = y_data
-		    sess.run(train_step, feed_dict={xs: x_feed, ys: y_feed})
-		    loss_data = sess.run(loss, feed_dict={xs: test_x_data, ys: test_y_data})
-		    if loss_data<lowest_loss:
-			    lowest_loss = loss_data
-			    print("lowest loss:", lowest_loss)
-			    saver.save(sess, project_dir+'/ckpt_v5/model.ckpt', global_step=global_step)
-			if i % (1000) == 0:
-				print("step: ", sess.run(global_step), loss_data, "learning_rate: ", sess.run(learning_rate))
+        global_step = tf.Variable(0)
+        learning_rate = tf.train.exponential_decay(0.05, global_step, 100, 0.999, staircase = False)
+        loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys - prediction),reduction_indices=[1]))
+        train_step = tf.train.AdamOptimizer(learning_rate = learning_rate).minimize(loss, global_step = global_step)
+        saver=tf.train.Saver()
+        sess = tf.InteractiveSession()
+        model_file=tf.train.latest_checkpoint(project_dir+'/ckpt_v5')
+        saver.restore(sess,model_file)
+        saver=tf.train.Saver(max_to_keep=1)
+        for i in range(iterations):
+            x_feed = x_data
+            y_feed = y_data            
+            sess.run(train_step, feed_dict={xs: x_feed, ys: y_feed})
+            loss_data = sess.run(loss, feed_dict={xs: test_x_data, ys: test_y_data})
+            if loss_data<lowest_loss:
+                lowest_loss = loss_data
+                print("lowest loss:", lowest_loss)
+                saver.save(sess, project_dir+'/ckpt_v5/model.ckpt', global_step=global_step)
+            if i % (1000) == 0:
+                print("step: ", sess.run(global_step), loss_data, "learning_rate: ", sess.run(learning_rate))
 This part predicts the output of every step and adds them together. As the error becomes larger when steps increase, you can reset the accumulated error to zero every n steps by modifying **if(i%5000==0).**
 
     start = 0
