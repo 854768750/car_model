@@ -124,11 +124,11 @@ if train equals to 1, a new model will be trained with global step initialized a
 		    loss_data = sess.run(loss, feed_dict={xs: test_x_data, ys: test_y_data})
 		    #store the variables with the lowest loss
 		    if loss_data<lowest_loss:
-			    lowest_loss = loss_data
-			    print("lowest loss:", lowest_loss)
-			    saver.save(sess, project_dir+'/ckpt_v5/model.ckpt', global_step=global_step)
-			if i % (1000) == 0:
-					print("step: ", sess.run(global_step), loss_data, "learning_rate: ", sess.run(learning_rate))
+			 lowest_loss = loss_data
+			 print("lowest loss:", lowest_loss)
+			 saver.save(sess, project_dir+'/ckpt_v5/model.ckpt', global_step=global_step)
+			 if i % (1000) == 0:
+			     print("step: ", sess.run(global_step), loss_data, "learning_rate: ", sess.run(learning_rate))
 if train is 2, the model is restored and not trained any more
 
     #just load variables of the NN and don not train the NN
@@ -171,15 +171,15 @@ This part predicts the output of every step and adds them together. As the error
     current_state = result[start,1:3].reshape([-1,2])
     predict_state = np.zeros((predict_size,2))
     for i in range(0,predict_size,1):
-	    if(i%5000==0):
-		    current_state = result[start+i,1:3].reshape([-1,2])
-		current_input = np.concatenate((theta_t[start+i,:].reshape([-1,1]),v_t[start+i,:].reshape([-1,1]), command_data[start+i,:].reshape([-1,2])),axis=1)
-		current_output = sess.run(prediction, feed_dict={xs: current_input})
-		current_state = current_output + current_state#result[start+i,1:3].reshape([-1,2])
-		#print("current_input:", current_input)
-		predict_state[i,:] = current_state
-		#print("state_data:", state_data[i+start,0:6])
-		#print("prediction:", predict_state[i,0:6])
+        if(i%5000==0):
+            current_state = result[start+i,1:3].reshape([-1,2])
+        current_input = np.concatenate((theta_t[start+i,:].reshape([-1,1]),v_t[start+i,:].reshape([-1,1]), command_data[start+i,:].reshape([-1,2])),axis=1)
+        current_output = sess.run(prediction, feed_dict={xs: current_input})
+        current_state = current_output + current_state#result[start+i,1:3].reshape([-1,2])
+        #print("current_input:", current_input)
+        predict_state[i,:] = current_state
+        #print("state_data:", state_data[i+start,0:6])
+        #print("prediction:", predict_state[i,0:6])
 Plot the ground truth and predicted trajectory using matplot.
 
     if plot:
