@@ -115,20 +115,20 @@ if train equals to 1, a new model will be trained with global step initialized a
 	    saver=tf.train.Saver(max_to_keep=1)
 	    #train for ietrations
 	    for i in range(1,iterations):
-		    #feed batch_size samples at one time
-		    feed_start = (i*batch_size)%train_size
-		    feed_end = ((i+1)*batch_size)%train_size
-		    x_feed = x_data
-		    y_feed = y_data
-		    sess.run(train_step, feed_dict={xs: x_feed, ys: y_feed})
-		    loss_data = sess.run(loss, feed_dict={xs: test_x_data, ys: test_y_data})
-		    #store the variables with the lowest loss
-		    if loss_data<lowest_loss:
-			 lowest_loss = loss_data
-			 print("lowest loss:", lowest_loss)
-			 saver.save(sess, project_dir+'/ckpt_v5/model.ckpt', global_step=global_step)
-			 if i % (1000) == 0:
-			     print("step: ", sess.run(global_step), loss_data, "learning_rate: ", sess.run(learning_rate))
+               #feed batch_size samples at one time
+		  feed_start = (i*batch_size)%train_size
+		  feed_end = ((i+1)*batch_size)%train_size
+		  x_feed = x_data
+		  y_feed = y_data
+		  sess.run(train_step, feed_dict={xs: x_feed, ys: y_feed})
+		  loss_data = sess.run(loss, feed_dict={xs: test_x_data, ys: test_y_data})
+		  #store the variables with the lowest loss
+		  if loss_data<lowest_loss:
+		      lowest_loss = loss_data
+		      print("lowest loss:", lowest_loss)
+		      saver.save(sess, project_dir+'/ckpt_v5/model.ckpt', global_step=global_step)
+		      if i % (1000) == 0:
+		          print("step: ", sess.run(global_step), loss_data, "learning_rate: ", sess.run(learning_rate))
 if train is 2, the model is restored and not trained any more
 
     #just load variables of the NN and don not train the NN
