@@ -121,7 +121,7 @@ Launch the file by
     source ~/catkin_ws/devel/setup.bash
     roslaunch racecar_gazebo racecar.launch
 and gazebo environment with a car model is shown in the window.
-![gazebo_screen_shot](https://github.com/854768750/car_model/gazebo_screen_shot.png)
+![gazebo_screen_shot](https://github.com/854768750/car_model/blob/master/gazebo_screen_shot.png)
 
 ### 3) Publish control command and let the car move automatically
 
